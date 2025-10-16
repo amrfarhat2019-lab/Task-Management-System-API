@@ -150,8 +150,9 @@ class TaskController extends Controller
     
     if ($task->status === 'completed') {
         $dependentTasks = Task::whereHas('dependencies', function ($q) use ($task) {
-            $q->where('dependent_task_id', $task->id ?? $task->getKey());
+            $q->where('depends_on_task_id', $task->id);
         })->get();
+        
 
         foreach ($dependentTasks as $dep) {
             if (!$dep->dependencies()->where('status', '!=', 'completed')->exists()) {
