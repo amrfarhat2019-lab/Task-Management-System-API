@@ -14,37 +14,37 @@ class TaskController extends Controller
     {
         $query = Task::query();
     
-        // ✅ فلترة حسب الحالة
+        
         if ($request->status) {
             $query->where('status', $request->status);
         }
     
-        // ✅ فلترة حسب الشخص المسؤول
+        
         if ($request->assignee_id) {
             $query->where('assignee_id', $request->assignee_id);
         }
     
-        // ✅ فلترة بالتاريخ
+       
         if ($request->has(['from', 'to'])) {
             $query->whereBetween('due_date', [$request->from, $request->to]);
         }
     
-        // ✅ لو المستخدم الحالي role = user → يشوف بس التاسكات بتاعته
+        
         if ($request->user()->role === 'user') {
             $query->where('assignee_id', $request->user()->id);
         }
     
-        // ✅ نجيب التاسكات مع الـ dependencies
+        
         $tasks = $query->with('dependencies')->get();
     
-        // ✅ لو مفيش نتائج
+        
         if ($tasks->isEmpty()) {
             return response()->json([
                 'message' => 'No tasks found for the given filters , [ Please Try Again ]'
             ], 404);
         }
     
-        // ✅ في نتائج
+       
         return response()->json($tasks, 200);
     }
     
